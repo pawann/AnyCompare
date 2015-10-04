@@ -1,0 +1,49 @@
+API
+----
+
+ObjectComparator:
+------------------
+  // Tells if 2 objects are equal or not using default context
+  static boolean equals(Object a, Object b);
+  
+  // Tells if 2 objects are equal or not using custom context
+  static boolean equals(Object a, Object b, Context ctx);
+  
+
+  //Get collection of Differences
+  static Collection<Diff> compare(Object a, Object b);
+  
+  //Register a custom comparison for a type
+  static void register(TypeHandler handler);
+  
+  //Gets the context used by comparator
+  static Context getContext()
+  
+
+Context
+---------
+   //Registers a Type handler for comparison
+   Context register(TypeHandler handler)
+   
+   //Register a field to be ignored
+   Context registerIgnoreField(Field field)
+   
+   //Register a custom DifferenceListner
+   static void register(IDifferenceListner listener);
+
+   //Register a fully qualified field name to be ignored
+   Context register(FieldFeature.IgnoreField, String fullyQualifiedField)
+
+   //Register a fully qualified field name to be used as Key in collection comparison
+   Context register(FieldFeature.KeyField, String fullyQualifiedField)
+   
+   //Register a fully qualified field names to be used as Ignore/Key in collection comparison
+   Context register(FieldFeature.IgnoreField, List<String> fullyQualifiedField)
+   
+  
+CollectionCompareHandler:
+--------------------------
+   boolean equals(Collection<?> a, Collection<?> b);
+   Collection<Diff> compare(Collection<?> a, Collection<?> b);
+   
+  

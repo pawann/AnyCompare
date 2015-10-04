@@ -1,0 +1,17 @@
+{
+  "ssn" : "000-00-0001",
+  "firstName" : "John",
+  "lastName" : "Smithh",
+  "gender" : "M",
+  "age" : 10,
+  "bankBalance" : 1000.4,
+  "friends" : [ {
+    "ssn" : "000-00-0002",
+    "firstName" : "John",
+    "lastName" : "Doee",
+    "gender" : "M",
+    "age" : 25,
+    "bankBalance" : 100.23,
+    "friends" : null
+  } ]
+}

@@ -1,0 +1,18 @@
+/**
+ Usecases
+**/
+
+1) User passes actual and expected objects to the API. API returns true if all the fields in both of the objects are identical, false otherwise.
+
+2) User registers a Difference-listener (Some implementations could be provided out of the box eg LogDiffListener). 
+   For each difference this listener is called.
+   User calls the API with actual and expected objects. API returns true/false considering the listener execution.
+
+3) User should be able to retrieve list of differences (i. compare api returns a collection of diffs, or a separate call to context?)
+
+
+Handling collection comparisons
+-------------    
+    
+   
+   
