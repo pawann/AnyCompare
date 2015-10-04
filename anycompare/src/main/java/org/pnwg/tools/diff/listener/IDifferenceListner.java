@@ -1,11 +1,9 @@
 package org.pnwg.tools.diff.listener;
 
-import java.lang.reflect.Field;
-
-import org.pnwg.tools.diff.context.IContext;
+import org.pnwg.tools.diff.model.Diff;
 
 public interface IDifferenceListner {
 
-	boolean onDifference(Object expected, Object actual, Field field, IContext context);
+	void onDifference(Diff diff);
 
 }

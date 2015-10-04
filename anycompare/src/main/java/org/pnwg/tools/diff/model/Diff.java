@@ -2,12 +2,24 @@ package org.pnwg.tools.diff.model;
 
 import java.lang.reflect.Field;
 
+import org.pnwg.tools.helpers.FieldUtil;
+
 /**
  * 
  * @author Pawan
  *
  */
 public class Diff {
+
+	public Diff() {
+	}
+
+	public Diff(Object expected, Object actual, Field field, DiffType type) {
+		this.expected = expected;
+		this.actual = actual;
+		this.field = field;
+		this.type = type;
+	}
 
 	/**
 	 * Reference to expected object
@@ -46,7 +58,7 @@ public class Diff {
 		this.actual = actual;
 	}
 
-	public Object getField() {
+	public Field getField() {
 		return field;
 	}
 
@@ -81,6 +93,12 @@ public class Diff {
 			}
 		}
 		return value;
+	}
+
+	@Override
+	public String toString() {
+		return "{ expected: " + getExpectedValue() + ", actual: " + getActualValue() + ", field: "
+				+ FieldUtil.makeFieldName(field) + ", type:" + type + " }";
 	}
 
 }

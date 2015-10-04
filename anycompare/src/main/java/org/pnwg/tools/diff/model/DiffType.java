@@ -1,5 +1,7 @@
 package org.pnwg.tools.diff.model;
 
+import org.pnwg.tools.diff.handler.SimpleTypeHandler;
+
 public enum DiffType {
 
 	/**
@@ -16,6 +18,11 @@ public enum DiffType {
 	 * Actual object is null
 	 */
 	ACTUAL_OBJECT_NULL,
+
+	/**
+	 * Difference determined by custom {@link SimpleTypeHandler}
+	 */
+	CUSTOM_COMPARE,
 
 	/**
 	 * This diff was ignored even before comparison

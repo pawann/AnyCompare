@@ -32,7 +32,18 @@ public class ObjectCompare {
 	 * @return
 	 */
 	public static boolean compare(Object expected, Object actual, IContext context) {
-		return true;
+		context.getFieldVisitor().visit(expected, actual, context);
+		System.out.println(context.getDifferences());
+		return !context.hasDifferences();
+	}
+
+	/**
+	 * Builds a fresh {@link IContext}
+	 * 
+	 * @return
+	 */
+	public static IContext buildContext() {
+		return new CompareContextImpl();
 	}
 
 }

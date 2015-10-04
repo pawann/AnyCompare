@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.pnwg.tools.diff.context.FieldFeature;
+import org.pnwg.tools.diff.context.IContext;
 import org.pnwg.tools.test.data.util.DataUtil;
 import org.pnwg.tools.test.model.Person;
 
@@ -17,7 +20,11 @@ public class ObjectCompareTest {
 	public void testCompare() throws IOException {
 		Person p1 = DataUtil.readDataFromFile("test/data/person1.json", Person.class);
 		Person p2 = DataUtil.readDataFromFile("test/data/person2.json", Person.class);
-		ObjectCompare.compare(p1, p2);
+
+		IContext ctx = ObjectCompare.buildContext();
+		ctx.register(FieldFeature.IGNORE_FIELD, "org.pnwg.tools.test.model.Person.age");
+		boolean result = ObjectCompare.compare(p1, p2, ctx);
+		Assert.assertTrue(result);
 	}
 
 	/**
