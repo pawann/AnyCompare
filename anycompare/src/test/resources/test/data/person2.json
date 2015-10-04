@@ -1,17 +1,41 @@
 {
   "ssn" : "000-00-0001",
   "firstName" : "John",
-  "lastName" : "Smithh",
+  "lastName" : "Smith",
   "gender" : "M",
   "age" : 10,
-  "bankBalance" : 1000.4,
-  "friends" : [ {
+  "bankBalance" : 1050.50,
+  "friends" : [{
     "ssn" : "000-00-0002",
-    "firstName" : "John",
-    "lastName" : "Doee",
+    "firstName" : "David",
+    "lastName" : "Jones",
     "gender" : "M",
-    "age" : 25,
-    "bankBalance" : 100.23,
+    "age" : 29,
+    "bankBalance" : 1200.50,
+    "friends" : null
+  },{
+    "ssn" : "000-00-0004",
+    "firstName" : "Joe",
+    "lastName" : "Tribbiani",
+    "gender" : "M",
+    "age" : 32,
+    "bankBalance" : 9000.33,
+    "friends" : null
+  },{
+    "ssn" : "000-00-0003",
+    "firstName" : "John",
+    "lastName" : "Doe",
+    "gender" : "M",
+    "age" : 23,
+    "bankBalance" : 300.93,
+    "friends" : null
+  },{
+    "ssn" : "000-00-0003",
+    "firstName" : "John",
+    "lastName" : "Doe",
+    "gender" : "M",
+    "age" : 23,
+    "bankBalance" : 300.93,
     "friends" : null
   } ]
 }

@@ -14,9 +14,9 @@ public class FieldProcessor implements IFieldProcessor {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void process(Object expectedObj, Object actualObj, Field field, IContext context) {
+
 		// Check if field is ignorable
-		if (context.isIgnoreField(field)) {
-			onDifference(expectedObj, actualObj, field, DiffType.IGNORED, context);
+		if (context.config().isIgnoreField(field)) {
 			return;
 		}
 
@@ -34,7 +34,7 @@ public class FieldProcessor implements IFieldProcessor {
 		Object actual = FieldUtil.getField(actualObj, field);
 
 		// If objects are plainly equal.
-		if (expected == actual || expected.equals(actual)) {
+		if (expected == actual) {
 			return;
 		}
 
@@ -54,8 +54,8 @@ public class FieldProcessor implements IFieldProcessor {
 			return;
 		}
 
-		if (context.getTypeHandler(expectedClazz) != null) {
-			ITypeHandler handler = context.getTypeHandler(expectedClazz);
+		ITypeHandler handler = context.config().getTypeHandler(expectedClazz);
+		if (handler != null) {
 			// SimpleTypeHandler is expected to be User defined handler
 			if (handler instanceof SimpleTypeHandler) {
 				boolean isEqual = ((SimpleTypeHandler) handler).isEqual(expected, actual);
@@ -71,17 +71,20 @@ public class FieldProcessor implements IFieldProcessor {
 			}
 		}
 
-		// If we are here that means these objects are not equal
-		onDifference(expectedObj, actualObj, field, DiffType.VALUE_MISMATCH, context);
+		if (!expected.equals(actual)) {
+			// If we are here that means these objects are not equal
+			onDifference(expectedObj, actualObj, field, DiffType.VALUE_MISMATCH, context);
+		}
 	}
 
-	public static void onDifference(Object expectedObj, Object actualObj, Field field, DiffType type,
+	public static Diff onDifference(Object expectedObj, Object actualObj, Field field, DiffType type,
 			IContext context) {
 		Diff diff = new Diff(expectedObj, actualObj, field, type);
 		context.addDiff(diff);
-		for (IDifferenceListner listener : context.getDifferenceListners()) {
+		for (IDifferenceListner listener : context.config().getDifferenceListners()) {
 			listener.onDifference(diff);
 		}
+		return diff;
 	}
 
 }

@@ -42,6 +42,11 @@ public class Diff {
 	 */
 	private DiffType type;
 
+	/**
+	 * Key - in case of collection diff.
+	 */
+	private String key;
+
 	public Object getExpected() {
 		return expected;
 	}
@@ -74,11 +79,26 @@ public class Diff {
 		this.type = type;
 	}
 
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
 	public Object getExpectedValue() {
+		if (field == null) {
+			return expected;
+		}
 		return getFieldValue(expected, field);
 	}
 
 	public Object getActualValue() {
+		if (field == null) {
+			return actual;
+		}
+
 		return getFieldValue(actual, field);
 	}
 
@@ -98,7 +118,7 @@ public class Diff {
 	@Override
 	public String toString() {
 		return "{ expected: " + getExpectedValue() + ", actual: " + getActualValue() + ", field: "
-				+ FieldUtil.makeFieldName(field) + ", type:" + type + " }";
+				+ FieldUtil.makeFieldName(field) + ", type:" + type + ", Key:" + key + " }";
 	}
 
 }

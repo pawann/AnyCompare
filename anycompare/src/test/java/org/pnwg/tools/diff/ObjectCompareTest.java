@@ -10,6 +10,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.pnwg.tools.diff.context.FieldFeature;
 import org.pnwg.tools.diff.context.IContext;
+import org.pnwg.tools.diff.handler.SimpleTypeHandler;
+import org.pnwg.tools.diff.model.Diff;
 import org.pnwg.tools.test.data.util.DataUtil;
 import org.pnwg.tools.test.model.Person;
 
@@ -22,8 +24,20 @@ public class ObjectCompareTest {
 		Person p2 = DataUtil.readDataFromFile("test/data/person2.json", Person.class);
 
 		IContext ctx = ObjectCompare.buildContext();
-		ctx.register(FieldFeature.IGNORE_FIELD, "org.pnwg.tools.test.model.Person.age");
+		ctx.config().register(FieldFeature.IGNORE_FIELD, "org.pnwg.tools.test.model.Person.age");
+		ctx.config().register(BigDecimal.class, new SimpleTypeHandler<BigDecimal>() {
+			@Override
+			public boolean isEqual(BigDecimal expected, BigDecimal actual) {
+				return expected.compareTo(actual) == 0;
+			}
+		});
+		ctx.config().register(FieldFeature.KEY_FIELD, "org.pnwg.tools.test.model.Person.ssn");
+
 		boolean result = ObjectCompare.compare(p1, p2, ctx);
+		int i = 0;
+		for (Diff d : ctx.getDifferences()) {
+			System.out.println((++i) + "  : " + d);
+		}
 		Assert.assertTrue(result);
 	}
 

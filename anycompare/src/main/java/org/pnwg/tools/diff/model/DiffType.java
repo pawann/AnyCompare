@@ -25,8 +25,37 @@ public enum DiffType {
 	CUSTOM_COMPARE,
 
 	/**
-	 * This diff was ignored even before comparison
+	 * If collections are not of the same size
 	 */
-	IGNORED;
+	COLLECTION_SIZE_MISMATCH,
 
+	/**
+	 * If expected collection is null, but actual item has it
+	 */
+	COLLECTION_UNEXPECTED,
+
+	/**
+	 * Unexpected item in the actual collection
+	 */
+	COLLECTION_UNEXPECTED_ITEM,
+
+	/**
+	 * Missing item in the actual collection
+	 */
+	COLLECTION_MISSING_ITEM,
+
+	/**
+	 * Collection for a key do not match
+	 */
+	COLLECTION_BY_KEY_ACTUAL_COLL_NULL,
+
+	/**
+	 * Collection for a key do not match
+	 */
+	COLLECTION_BY_KEY_ACTUAL_COLL_UNEXPECTED,
+
+	/**
+	 * Number of items for a key do not match
+	 */
+	COLLECTION_BY_KEY_COLL_SIZE_MISMATCH;
 }

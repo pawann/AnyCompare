@@ -17,7 +17,7 @@ public class FieldVisitor implements IFieldVisitor {
 	 */
 	@Override
 	public void visit(Object expected, Object actual, IContext context) {
-		IFieldProcessor processor = context.getFieldProcessor();
+		IFieldProcessor processor = context.config().getFieldProcessor();
 		if (expected == null || actual == null) {
 			processor.process(expected, actual, null, context);
 		}
@@ -32,7 +32,7 @@ public class FieldVisitor implements IFieldVisitor {
 
 			// If current class is registered as the last base class to be
 			// checked, Breakout.
-			if (context.isRegisteredBaseClass(expClazz)) {
+			if (context.config().isRegisteredBaseClass(expClazz)) {
 				break;
 			}
 

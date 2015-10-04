@@ -1,6 +1,6 @@
 package org.pnwg.tools.diff;
 
-import org.pnwg.tools.diff.context.CompareContextImpl;
+import org.pnwg.tools.diff.context.ContextImpl;
 import org.pnwg.tools.diff.context.IContext;
 
 /**
@@ -10,7 +10,7 @@ import org.pnwg.tools.diff.context.IContext;
  */
 public class ObjectCompare {
 
-	private static IContext defaultContext = new CompareContextImpl();
+	private static IContext defaultContext = new ContextImpl();
 
 	/**
 	 * Tells if 2 objects are equal or not using default context
@@ -32,7 +32,7 @@ public class ObjectCompare {
 	 * @return
 	 */
 	public static boolean compare(Object expected, Object actual, IContext context) {
-		context.getFieldVisitor().visit(expected, actual, context);
+		context.config().getFieldVisitor().visit(expected, actual, context);
 		System.out.println(context.getDifferences());
 		return !context.hasDifferences();
 	}
@@ -43,7 +43,7 @@ public class ObjectCompare {
 	 * @return
 	 */
 	public static IContext buildContext() {
-		return new CompareContextImpl();
+		return new ContextImpl();
 	}
 
 }
