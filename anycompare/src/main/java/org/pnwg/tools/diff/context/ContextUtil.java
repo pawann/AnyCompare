@@ -13,4 +13,13 @@ public class ContextUtil {
 		newctx.setConfig(ctx.config());
 		return newctx;
 	}
+
+	/**
+	 * Create a new instance
+	 * 
+	 * @return
+	 */
+	public static IContext newContext() {
+		return new ContextImpl();
+	}
 }

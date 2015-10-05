@@ -5,6 +5,8 @@ import java.util.List;
 
 public class FieldUtil {
 
+	private static final String NO_KEY_FIELD = "NO_KEY_FIELD";
+
 	private static final String FIELD_NAME_SEPARATOR = ".";
 
 	private static final String KEY_SEPARATOR = "|";
@@ -22,6 +24,21 @@ public class FieldUtil {
 			String cname = field.getDeclaringClass().getName();
 			String fname = field.getName();
 			fqnFname = cname + FIELD_NAME_SEPARATOR + fname;
+		}
+		return fqnFname;
+	}
+
+	/**
+	 * Return a String of the form com.example.test.Person.age, where age is
+	 * represented by Field object.
+	 * 
+	 * @param field
+	 * @return
+	 */
+	public static String makeFieldName(Class<?> clazz, String fieldName) {
+		String fqnFname = "";
+		if (fieldName != null) {
+			fqnFname = clazz.getName() + FIELD_NAME_SEPARATOR + fieldName;
 		}
 		return fqnFname;
 	}
@@ -112,6 +129,9 @@ public class FieldUtil {
 	 * @return
 	 */
 	public static String buildKey(Object obj, List<String> fields) {
+		if (fields == null) {
+			return NO_KEY_FIELD;
+		}
 		StringBuilder key = new StringBuilder();
 		for (String field : fields) {
 			Object val = getField(obj, field);

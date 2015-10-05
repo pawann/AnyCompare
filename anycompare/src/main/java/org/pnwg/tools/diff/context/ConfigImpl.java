@@ -2,6 +2,7 @@ package org.pnwg.tools.diff.context;
 
 import java.lang.reflect.Field;
 import java.util.AbstractCollection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,6 +103,7 @@ public class ConfigImpl implements IConfig {
 	public <T> ITypeHandler<T> getTypeHandler(Class<T> clazz) {
 		ITypeHandler<T> handler = null;
 		Class<?> currClass = clazz;
+		List<Class<?>> noHandlerClassList = new ArrayList<>();
 		while (currClass != null) {
 			String cname = currClass.getName();
 			handler = (ITypeHandler<T>) typeHandlers.get(cname);
@@ -121,8 +123,15 @@ public class ConfigImpl implements IConfig {
 			currClass = currClass.getSuperclass();
 
 			// Optimization: remember that we didnt find one for this class
-			typeHandlers.put(cname, null);
+			noHandlerClassList.add(currClass);
 		}
+
+		// this entire hierarchy has one handler
+		for (Class<?> c : noHandlerClassList) {
+			if (c != null)
+				typeHandlers.put(c.getName(), handler);
+		}
+
 		return handler;
 	}
 

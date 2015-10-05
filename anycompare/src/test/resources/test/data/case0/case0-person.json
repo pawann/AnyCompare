@@ -3,9 +3,17 @@
   "firstName" : "John",
   "lastName" : "Smith",
   "gender" : "M",
-  "age" : 10,
-  "bankBalance" : 1050.50,
-  "friends" : [{
+  "age" : 20,
+  "bankBalance" : 1000.4,
+  "friends":[{
+    "ssn" : "000-00-0003",
+    "firstName" : "John",
+    "lastName" : "Doe",
+    "gender" : "M",
+    "age" : 23,
+    "bankBalance" : 300.93,
+    "friends" : null
+  },{
     "ssn" : "000-00-0002",
     "firstName" : "David",
     "lastName" : "Jones",
@@ -21,21 +29,5 @@
     "age" : 32,
     "bankBalance" : 9000.33,
     "friends" : null
-  },{
-    "ssn" : "000-00-0003",
-    "firstName" : "John",
-    "lastName" : "Doe",
-    "gender" : "M",
-    "age" : 23,
-    "bankBalance" : 300.93,
-    "friends" : null
-  },{
-    "ssn" : "000-00-0003",
-    "firstName" : "John",
-    "lastName" : "Doe",
-    "gender" : "M",
-    "age" : 23,
-    "bankBalance" : 300.93,
-    "friends" : null
-  } ]
+  }]
 }

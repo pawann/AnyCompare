@@ -2,7 +2,6 @@ package org.pnwg.tools.diff.handler;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +10,6 @@ import org.pnwg.tools.diff.context.ContextUtil;
 import org.pnwg.tools.diff.context.IContext;
 import org.pnwg.tools.diff.model.Diff;
 import org.pnwg.tools.diff.model.DiffType;
-import org.pnwg.tools.helpers.FieldProcessor;
 import org.pnwg.tools.helpers.FieldUtil;
 import org.pnwg.tools.helpers.Pair;
 
@@ -21,17 +19,29 @@ public class CollectionHandler implements ITypeHandler<AbstractCollection<?>> {
 	@Override
 	public void isEqual(AbstractCollection<?> expected, AbstractCollection<?> actual, IContext context) {
 
+		// If expected is null or empty
+		if (expected == null || expected.size() == 0) {
+			if (actual != null && actual.size() != 0) {
+				context.onDifference(null, actual, null, DiffType.COLLECTION_UNEXPECTED_ITEM);
+			}
+			return;
+		}
+
 		if (expected.size() != actual.size()) {
 			// Create
-			FieldProcessor.onDifference(expected.size(), actual.size(), null, DiffType.COLLECTION_SIZE_MISMATCH,
-					context);
+			context.onDifference(expected.size(), actual.size(), null, DiffType.COLLECTION_SIZE_MISMATCH);
 			// continue.
 		}
 
 		// if( ) sort collections by KeyFields
 		List<Object> expectedColl = new ArrayList<>(expected);
-		// Sample object to determine content type
-		Object sampleObj = expectedColl.get(0);
+		// Sample object to determine content type, find the first non-null one
+		Object sampleObj = null;
+		int index = 0;
+		while (sampleObj == null || index < expectedColl.size()) {
+			sampleObj = expectedColl.get(index++);
+		}
+
 		List<Object> actualColl = new ArrayList<>(actual);
 		List<String> fields = null;
 		if (context.config().getKeyFields(sampleObj.getClass()) != null) {
@@ -42,35 +52,29 @@ public class CollectionHandler implements ITypeHandler<AbstractCollection<?>> {
 		Map<String, List<Object>> actualGroupedColl = groupCollectionByKey(actualColl, fields);
 
 		compareGroupedCollection(expectedGroupedColl, actualGroupedColl, context);
-
-		/*
-		 * if (fields != null && fields.size() != 0) { FieldsComparator cmp =
-		 * new FieldsComparator(fields); Collections.sort(expectedColl, cmp);
-		 * Collections.sort(actualColl, cmp); }
-		 */
-
 	}
 
 	private void compareGroupedCollection(Map<String, List<Object>> expected, Map<String, List<Object>> actual,
 			IContext context) {
 		for (Map.Entry<String, List<Object>> expEntry : expected.entrySet()) {
 			String key = expEntry.getKey();
-			List<Object> expectedList = actual.get(key);
+			List<Object> expectedList = expected.get(key);
 			List<Object> actualList = actual.get(key);
 
 			if (actualList == null) {
-				Diff diff = FieldProcessor.onDifference(expectedList, actualList, null,
-						DiffType.COLLECTION_BY_KEY_ACTUAL_COLL_NULL, context);
+				Diff diff = context.onDifference(expectedList, actualList, null,
+						DiffType.COLLECTION_BY_KEY_ACTUAL_COLL_NULL);
 				// set the key
 				diff.setKey(key);
 			} else if (expectedList.size() != actualList.size()) {
-				Diff diff = FieldProcessor.onDifference(expectedList, actualList, null,
-						DiffType.COLLECTION_BY_KEY_COLL_SIZE_MISMATCH, context);
+				Diff diff = context.onDifference(expectedList, actualList, null,
+						DiffType.COLLECTION_BY_KEY_COLL_SIZE_MISMATCH);
 				// set the key
 				diff.setKey(key);
-			} else {
-				compareIdenticalKeyItemList(expectedList, actualList, context, key);
 			}
+
+			compareIdenticalKeyItemList(expectedList, actualList, context, key);
+
 		}
 	}
 
@@ -90,7 +94,7 @@ public class CollectionHandler implements ITypeHandler<AbstractCollection<?>> {
 		for (Object expItem : expected) {
 			List<Diff> diffs = findClosestItemDiffs(expItem, actualDup, context);
 			if (diffs != null && !diffs.isEmpty()) {
-				context.getDifferences().addAll(diffs);
+				context.addDiff(diffs);
 			}
 			expectedDup.remove(expItem);
 
@@ -101,20 +105,20 @@ public class CollectionHandler implements ITypeHandler<AbstractCollection<?>> {
 
 		// At this point actualDup list has all unexpected items
 		for (Object item : actualDup) {
-			Diff diff = FieldProcessor.onDifference(null, item, null, DiffType.COLLECTION_UNEXPECTED_ITEM, context);
+			Diff diff = context.onDifference(null, item, null, DiffType.COLLECTION_UNEXPECTED_ITEM);
 			diff.setKey(key);
 		}
 
 		// And expectedDup list has all missing items
 		for (Object item : expectedDup) {
-			Diff diff = FieldProcessor.onDifference(item, null, null, DiffType.COLLECTION_MISSING_ITEM, context);
+			Diff diff = context.onDifference(item, null, null, DiffType.COLLECTION_MISSING_ITEM);
 			diff.setKey(key);
 		}
 	}
 
 	/**
-	 * Find the obj in the given list that has minimum differences. and removes
-	 * the item from the list.
+	 * Find the obj in the given list that has minimum differences and remove
+	 * that item from the list being serached.
 	 * 
 	 * @param obj
 	 * @param list
@@ -124,22 +128,39 @@ public class CollectionHandler implements ITypeHandler<AbstractCollection<?>> {
 	private List<Diff> findClosestItemDiffs(Object obj, List<Object> list, IContext context) {
 		List<Diff> minDiffs = null;
 		Map<Pair, List<Diff>> map = new HashMap<>();
+		Object foundObj = null;
 		for (Object item : list) {
 			IContext ctx = ContextUtil.copy(context);
 			Pair pair = new Pair(obj, item);
+			// We dont want to call listeners while trying to find closest
+			// match.
+			ctx.enableListeners(false);
 			ctx.config().getFieldVisitor().visit(obj, item, ctx);
+			if (!ctx.hasDifferences()) {
+				// current item is exact match
+				foundObj = item;
+				minDiffs = ctx.getDifferences();
+				break;
+			}
+
 			map.put(pair, ctx.getDifferences());
 		}
 
-		for (Map.Entry<Pair, List<Diff>> entry : map.entrySet()) {
-			if (minDiffs == null) {
-				minDiffs = entry.getValue();
-			}
+		if (foundObj == null) {
+			for (Map.Entry<Pair, List<Diff>> entry : map.entrySet()) {
+				if (minDiffs == null) {
+					minDiffs = entry.getValue();
+					foundObj = entry.getKey().getActual();
+				}
 
-			if (minDiffs.size() < entry.getValue().size()) {
-				minDiffs = entry.getValue();
+				if (minDiffs.size() < entry.getValue().size()) {
+					minDiffs = entry.getValue();
+					foundObj = entry.getKey().getActual();
+				}
 			}
 		}
+
+		list.remove(foundObj);
 
 		return minDiffs;
 	}
@@ -163,29 +184,4 @@ public class CollectionHandler implements ITypeHandler<AbstractCollection<?>> {
 		}
 		return map;
 	}
-
-	public static class FieldsComparator implements Comparator<Object> {
-
-		private List<String> fields;
-
-		public FieldsComparator(List<String> fields) {
-			this.fields = fields;
-		}
-
-		@Override
-		public int compare(Object o1, Object o2) {
-			if (o1 == null) {
-				return -1;
-			}
-			if (o2 == null) {
-				return 1;
-			}
-
-			String o1Str = FieldUtil.buildKey(o1, fields);
-			String o2Str = FieldUtil.buildKey(o2, fields);
-			return o1Str.compareTo(o2Str);
-		}
-
-	}
-
 }

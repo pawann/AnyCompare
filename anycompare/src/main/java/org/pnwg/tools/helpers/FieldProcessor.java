@@ -5,8 +5,6 @@ import java.lang.reflect.Field;
 import org.pnwg.tools.diff.context.IContext;
 import org.pnwg.tools.diff.handler.ITypeHandler;
 import org.pnwg.tools.diff.handler.SimpleTypeHandler;
-import org.pnwg.tools.diff.listener.IDifferenceListner;
-import org.pnwg.tools.diff.model.Diff;
 import org.pnwg.tools.diff.model.DiffType;
 
 public class FieldProcessor implements IFieldProcessor {
@@ -21,12 +19,12 @@ public class FieldProcessor implements IFieldProcessor {
 		}
 
 		if (expectedObj != null && actualObj == null) {
-			onDifference(expectedObj, actualObj, field, DiffType.ACTUAL_OBJECT_NULL, context);
+			context.onDifference(expectedObj, actualObj, field, DiffType.ACTUAL_OBJECT_NULL);
 			return;
 		}
 
 		if (actualObj != null && expectedObj == null) {
-			onDifference(expectedObj, actualObj, field, DiffType.EXPECTED_OBJECT_NULL, context);
+			context.onDifference(expectedObj, actualObj, field, DiffType.EXPECTED_OBJECT_NULL);
 			return;
 		}
 
@@ -41,7 +39,7 @@ public class FieldProcessor implements IFieldProcessor {
 		// If we happen to compare this pair already
 		Pair pair = new Pair(expected, actual);
 		if (context.checkPairRegistery(pair)) {
-			return;
+			// return;
 		}
 
 		context.addPairToRegistry(pair);
@@ -50,7 +48,7 @@ public class FieldProcessor implements IFieldProcessor {
 
 		// Primitive check
 		if (expectedClazz.isPrimitive() && expected != actual) {
-			onDifference(expectedObj, actualObj, field, DiffType.VALUE_MISMATCH, context);
+			context.onDifference(expectedObj, actualObj, field, DiffType.VALUE_MISMATCH);
 			return;
 		}
 
@@ -60,7 +58,7 @@ public class FieldProcessor implements IFieldProcessor {
 			if (handler instanceof SimpleTypeHandler) {
 				boolean isEqual = ((SimpleTypeHandler) handler).isEqual(expected, actual);
 				if (!isEqual) {
-					onDifference(expectedObj, actualObj, field, DiffType.CUSTOM_COMPARE, context);
+					context.onDifference(expectedObj, actualObj, field, DiffType.CUSTOM_COMPARE);
 					return;
 				}
 			} else {
@@ -73,18 +71,7 @@ public class FieldProcessor implements IFieldProcessor {
 
 		if (!expected.equals(actual)) {
 			// If we are here that means these objects are not equal
-			onDifference(expectedObj, actualObj, field, DiffType.VALUE_MISMATCH, context);
+			context.onDifference(expectedObj, actualObj, field, DiffType.VALUE_MISMATCH);
 		}
 	}
-
-	public static Diff onDifference(Object expectedObj, Object actualObj, Field field, DiffType type,
-			IContext context) {
-		Diff diff = new Diff(expectedObj, actualObj, field, type);
-		context.addDiff(diff);
-		for (IDifferenceListner listener : context.config().getDifferenceListners()) {
-			listener.onDifference(diff);
-		}
-		return diff;
-	}
-
 }

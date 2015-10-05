@@ -1,0 +1,8 @@
+{
+  "ssn" : "000-00-0001",
+  "firstName" : "John",
+  "lastName" : "Smithh",
+  "gender" : "MF",
+  "age" : 201,
+  "bankBalance" : 1000.45
+}

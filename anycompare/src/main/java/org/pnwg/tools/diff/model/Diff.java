@@ -47,6 +47,11 @@ public class Diff {
 	 */
 	private String key;
 
+	/**
+	 * Current diff location
+	 */
+	private String diffLocation;
+
 	public Object getExpected() {
 		return expected;
 	}
@@ -119,6 +124,14 @@ public class Diff {
 	public String toString() {
 		return "{ expected: " + getExpectedValue() + ", actual: " + getActualValue() + ", field: "
 				+ FieldUtil.makeFieldName(field) + ", type:" + type + ", Key:" + key + " }";
+	}
+
+	public String getDiffLocation() {
+		return diffLocation;
+	}
+
+	public void setDiffLocation(String diffLocation) {
+		this.diffLocation = diffLocation;
 	}
 
 }
